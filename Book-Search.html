@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Book Search</title>
+  <style>
+    .book {
+      display: flex;
+      margin-bottom: 10px;
+    }
+    .book img {
+      width: 50px;
+      height: 75px;
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Book Search</h1>
+
+  <div>
+    <input type="text" id="searchInput" placeholder="Enter search terms">
+    <button onclick="searchBooks()">Search</button>
+  </div>
+
+  <div id="searchResults"></div>
+
+  <script>
+    function searchBooks() {
+      var searchInput = document.getElementById('searchInput').value;
+      var url = 'https://www.googleapis.com/books/v1/volumes?q=' + searchInput;
+
+      fetch(url)
+        .then(response => response.json())
+        .then(data => displaySearchResults(data));
+    }
+
+    function displaySearchResults(data) {
+      var searchResults = document.getElementById('searchResults');
+      searchResults.innerHTML = '';
+
+      var books = data.items;
+      if (!books) {
+        searchResults.innerHTML = 'No results found.';
+        return;
+      }
+
+      var maxResults = Math.min(60, books.length);
+
+      for (var i = 0; i < maxResults; i++) {
+        var book = books[i].volumeInfo;
+        var title = book.title;
+        var cover = book.imageLinks ? book.imageLinks.smallThumbnail : '';
+        var link = books[i].selfLink;
+
+        var bookElement = document.createElement('div');
+        bookElement.className = 'book';
+
+        var imgElement = document.createElement('img');
+        imgElement.src = cover;
+
+        var titleElement = document.createElement('a');
+        titleElement.href = 'book-details.html?id=' + encodeURIComponent(books[i].id);
+        titleElement.textContent = title;
+
+        bookElement.appendChild(imgElement);
+        bookElement.appendChild(titleElement);
+
+        searchResults.appendChild(bookElement);
+      }
+    }
+  </script>
+</body>
+</html>

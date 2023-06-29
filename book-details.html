@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Book Details</title>
+  <style>
+    .book-details {
+      display: flex;
+      margin-bottom: 10px;
+    }
+    .book-details img {
+      width: 200px;
+      height: 300px;
+      margin-right: 10px;
+    }
+    .book-details-info {
+      flex-grow: 1;
+    }
+    .book-details-info h2 {
+      margin: 0;
+    }
+    .book-details-info p {
+      margin: 0 0 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Book Details</h1>
+
+  <div id="bookDetails"></div>
+
+  <script>
+    function getBookDetails() {
+      var params = new URLSearchParams(window.location.search);
+      var bookId = params.get('id');
+      var url = 'https://www.googleapis.com/books/v1/volumes/' + bookId;
+
+      fetch(url)
+        .then(response => response.json())
+        .then(data => displayBookDetails(data));
+    }
+
+    function displayBookDetails(data) {
+      var bookDetails = document.getElementById('bookDetails');
+      bookDetails.innerHTML = '';
+
+      var book = data.volumeInfo;
+
+      var bookDetailsElement = document.createElement('div');
+      bookDetailsElement.className = 'book-details';
+
+      var cover = book.imageLinks ? book.imageLinks.thumbnail : '';
+      var title = book.title;
+      var authors = book.authors ? book.authors.join(', ') : '';
+      var publisher = book.publisher ? book.publisher : '';
+      var description = book.description ? book.description : '';
+      var price = book.saleInfo && book.saleInfo.listPrice ? book.saleInfo.listPrice.amount : '';
+
+      var imgElement = document.createElement('img');
+      imgElement.src = cover;
+
+      var bookInfoElement = document.createElement('div');
+      bookInfoElement.className = 'book-details-info';
+
+      var titleElement = document.createElement('h2');
+      titleElement.textContent = title;
+
+      var authorsElement = document.createElement('p');
+      authorsElement.innerHTML = '<strong>Authors:</strong> ' + authors;
+
+      var publisherElement = document.createElement('p');
+      publisherElement.innerHTML = '<strong>Publisher:</strong> ' + publisher;
+
+      var descriptionElement = document.createElement('p');
+      descriptionElement.innerHTML = '<strong>Description:</strong> ' + description;
+
+      var priceElement = document.createElement('p');
+      priceElement.innerHTML = '<strong>Price:</strong> ' + price;
+
+      bookInfoElement.appendChild(titleElement);
+      bookInfoElement.appendChild(authorsElement);
+      bookInfoElement.appendChild(publisherElement);
+      bookInfoElement.appendChild(descriptionElement);
+      bookInfoElement.appendChild(priceElement);
+
+      bookDetailsElement.appendChild(imgElement);
+      bookDetailsElement.appendChild(bookInfoElement);
+
+      bookDetails.appendChild(bookDetailsElement);
+    }
+
+    // Call the function to fetch and display book details when the page loads.
+    getBookDetails();
+  </script>
+</body>
+</html>
