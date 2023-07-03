@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Public Bookshelf</title>
+  <style>
+    .bookshelf {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .book {
+      width: 200px;
+      text-align: center;
+    }
+    .book img {
+      width: 150px;
+      height: 225px;
+    }
+    .book-title {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Public Bookshelf</h1>
+
+  <div id="bookshelf"></div>
+
+  <script>
+    // Fetch the public bookshelf data from the Google Books API
+    fetch('https://www.googleapis.com/books/v1/users/107271893393582218526/bookshelves/1001/volumes')
+      .then(response => response.json())
+      .then(data => displayBookshelf(data));
+
+    function displayBookshelf(data) {
+      var bookshelf = document.getElementById('bookshelf');
+      var books = data.items;
+
+      if (!books) {
+        bookshelf.innerHTML = 'No books found.';
+        return;
+      }
+
+      var bookshelfContent = document.createElement('div');
+      bookshelfContent.className = 'bookshelf';
+
+      // Iterate over each book in the bookshelf data
+      for (var i = 0; i < books.length; i++) {
+        var book = books[i].volumeInfo;
+        var title = book.title;
+        var cover = book.imageLinks ? book.imageLinks.thumbnail : '';
+        var bookId = books[i].id;
+
+        // Create a book element
+        var bookElement = document.createElement('div');
+        bookElement.className = 'book';
+
+        // Create an image element for the book cover
+        var imgElement = document.createElement('img');
+        imgElement.src = cover;
+
+        // Create a title element for the book
+        var titleElement = document.createElement('div');
+        titleElement.className = 'book-title';
+        titleElement.textContent = title;
+
+        // Create a link element to the book details page
+        var linkElement = document.createElement('a');
+        linkElement.href = 'book-details.html?id=' + encodeURIComponent(bookId);
+        linkElement.appendChild(imgElement);
+        linkElement.appendChild(titleElement);
+
+        // Append the link element to the book element
+        bookElement.appendChild(linkElement);
+
+        // Append the book element to the bookshelf content
+        bookshelfContent.appendChild(bookElement);
+      }
+
+      // Append the bookshelf content to the bookshelf container
+      bookshelf.appendChild(bookshelfContent);
+    }
+  </script>
+</body>
+</html>
