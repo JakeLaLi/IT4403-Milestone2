@@ -33,6 +33,7 @@
       var params = new URLSearchParams(window.location.search);
       var bookId = params.get('id');
       var url = 'https://www.googleapis.com/books/v1/volumes/' + bookId;
+      console.log(url);
 
       fetch(url)
         .then(response => response.json())
